@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Query } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Request } from 'express';
@@ -14,8 +14,8 @@ export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
   @Get('/user_all')
-  findAll() {
-    return this.boardService.findAll();
+  findAll(@Query('page') page: number, @Query('limit') limit: number) {
+    return this.boardService.findAll(page, limit);
   }
 
   @Get('/user')

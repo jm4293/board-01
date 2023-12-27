@@ -17,8 +17,27 @@ export class BoardService {
     private boardRepository: Repository<Board>,
   ) {}
 
-  findAll(): Promise<Board[]> {
-    return this.boardRepository.find();
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    result: Board[];
+    total: number;
+  }> {
+    console.log('bbbbb', page);
+    console.log('cccccc', limit);
+
+    const [result, total] = await this.boardRepository.findAndCount({
+      skip: (page - 1) * 10,
+      take: limit,
+    });
+
+    console.log('result', result);
+    console.log('total', total);
+
+    return { result: result, total: total };
+
+    // return this.boardRepository.find();
   }
 
   async findOne(idx: number) {
