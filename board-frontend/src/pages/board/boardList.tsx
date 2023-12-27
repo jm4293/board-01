@@ -19,9 +19,16 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
   const boardAll = useQuery({
     queryKey: ["boardAll"],
     queryFn: () =>
-      axios.get("http://localhost:8080/board/user_all").then(res => {
-        return res.data;
-      }),
+      axios
+        .get("http://localhost:8080/board/user_all", {
+          params: {
+            page: 2,
+            limit: 10,
+          },
+        })
+        .then(res => {
+          return res.data;
+        }),
   });
 
   const detailData = useMutation({
@@ -63,6 +70,8 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
     }
   };
 
+  console.log("boardAll", boardAll);
+
   return (
     <>
       <div className="d-flex justify-content-between">
@@ -98,8 +107,8 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
             <col width="5%" />
           </colgroup>
           <tbody>
-            {boardAll.data?.length !== 0 ? (
-              boardAll.data?.map((el: tableData, index: number) => (
+            {boardAll.data && boardAll.data.result.length !== 0 ? (
+              boardAll.data.result.map((el: tableData, index: number) => (
                 <tr onClick={() => btn_rowClick(el)}>
                   <td>{index + 1}</td>
                   <td>{el.title}</td>
@@ -122,7 +131,7 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={4}>검색결과가 없습니다.</td>
+                <td colSpan={5}>검색결과가 없습니다.</td>
               </tr>
             )}
           </tbody>
