@@ -21,10 +21,7 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
     queryFn: () =>
       axios
         .get("http://localhost:8080/board/user_all", {
-          params: {
-            page: 2,
-            limit: 10,
-          },
+          params: { page: 1, limit: 10 },
         })
         .then(res => {
           return res.data;
