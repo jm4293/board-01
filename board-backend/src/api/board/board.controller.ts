@@ -14,12 +14,14 @@ export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
   @Get('/user_all')
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.boardService.findAll(page, limit);
+  findAll(
+    @Query() query: { page: number; limit: number },
+  ): Promise<{ result: Board[]; total: number }> {
+    return this.boardService.findAll(query.page, query.limit);
   }
 
   @Get('/user')
-  find(@Req() request: Request) {
+  find(@Req() request: Request): Promise<Board> {
     return this.boardService.findOne(+request.query.idx);
   }
 

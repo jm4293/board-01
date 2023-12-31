@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { UpdateBoardDto } from './dto/update-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
 import { Repository } from 'typeorm';
@@ -20,20 +19,11 @@ export class BoardService {
   async findAll(
     page: number = 1,
     limit: number = 10,
-  ): Promise<{
-    result: Board[];
-    total: number;
-  }> {
-    console.log('bbbbb', page);
-    console.log('cccccc', limit);
-
+  ): Promise<{ result: Board[]; total: number }> {
     const [result, total] = await this.boardRepository.findAndCount({
       skip: (page - 1) * 10,
       take: limit,
     });
-
-    console.log('result', result);
-    console.log('total', total);
 
     return { result: result, total: total };
 
@@ -57,12 +47,11 @@ export class BoardService {
 
   async create(body: CreateBoardDto): Promise<IResult> {
     try {
-      await this.boardRepository.save(body);
+      // await this.boardRepository.save(body);
 
-      // console.log('body', body); // body { title: '555', content: '555' }
-      // const query = `INSERT INTO board ("title", "content") VALUES (?)`;
-      // const values = [body.title, body.content]; // 값 바인딩
-      // const result = await this.boardRepository.query(query, values);
+      const query = 'INSERT INTO board (title, content) VALUES (?, ?)';
+      const values = [body.title, body.content]; // 값 바인딩
+      await this.boardRepository.query(query, values);
 
       return {
         status: 200,
@@ -82,10 +71,10 @@ export class BoardService {
     const isCheck = await this.boardRepository.findOne({ where: { idx } });
 
     if (isCheck) {
-      await this.boardRepository.update(idx, body);
+      // await this.boardRepository.update(idx, body);
 
-      // const query = `// UPDATE board SET title=${body.title} content=${body.content} WHERE idx = ${body.idx}`;
-      // await this.boardRepository.query(query);
+      const query = `UPDATE board SET title=${body.title} content=${body.content} WHERE idx = ${body.idx}`;
+      await this.boardRepository.query(query);
 
       return {
         status: 200,

@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BoardModule } from './board/board.module';
+import { BoardModule } from './api/board/board.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Board } from './board/entities/board.entity';
 
 @Module({
   imports: [
@@ -14,8 +13,9 @@ import { Board } from './board/entities/board.entity';
       username: 'root',
       password: 'root',
       database: 'board',
-      entities: [Board],
+      entities: [__dirname + '/api/**/*.entity.*'],
       synchronize: true,
+      logging: true,
     }),
     BoardModule,
   ],
