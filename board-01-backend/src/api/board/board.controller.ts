@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Query, Put, Delete } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Request } from 'express';
@@ -30,14 +30,13 @@ export class BoardController {
     return this.boardService.create(body);
   }
 
-  @Post('/modify')
+  @Put('/modify')
   update(@Body() body: Board) {
     return this.boardService.update(body);
   }
 
-  @Post('/delete')
-  remove(@Body() body: { idx: number }) {
-    console.log(body);
-    return this.boardService.remove(body.idx);
+  @Delete('/delete')
+  remove(@Req() req: Request) {
+    return this.boardService.remove(+req.query.idx);
   }
 }
