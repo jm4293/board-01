@@ -1,7 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import * as React from "react";
 import { useBoardModify } from "../../zustand/board/boardModify.ts";
+import moment from "moment";
+import { useState } from "react";
+import { boardAll_api, boardDelete_api, boardDetail_api } from "../../api/board_api/board_api.ts";
+import { pagination_type } from "../../interface/board_interface/board_interface.ts";
+import { Pagination } from "../../components/pagination/pagination.tsx";
 
 interface Props {
   setIsResister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,37 +15,33 @@ interface tableData {
   idx?: number;
   title: string;
   content: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export const BoardList: React.FC<Props> = ({ setIsResister }) => {
+  const [pagination, setPagination] = useState<pagination_type>({
+    currentPage: 1,
+    dataCount: 0,
+    pageCount: 0,
+  });
+
   const { modifyData, setModifyData } = useBoardModify();
 
   const boardAll = useQuery({
-    queryKey: ["boardAll"],
-    queryFn: () =>
-      axios
-        .get("http://localhost:8080/board/user_all", {
-          params: { page: 1, limit: 10 },
-        })
-        .then(res => {
-          return res.data;
-        }),
+    queryKey: ["boardAll", pagination.currentPage],
+    queryFn: () => boardAll_api(pagination, setPagination),
   });
 
   const detailData = useMutation({
     mutationKey: ["boardDetail"],
-    mutationFn: (idx: number) =>
-      axios.get(`http://localhost:8080/board/user`, { params: { idx: idx } }).then(res => {
-        return res.data;
-      }),
+    mutationFn: (idx: number) => boardDetail_api(idx),
   });
 
   const boardDelete = useMutation({
     mutationKey: ["boardDelete"],
-    mutationFn: (idx: number) =>
-      axios.post(`http://localhost:8080/board/delete`, { idx: idx }).then(res => {
-        return res.data;
-      }),
+    mutationFn: (idx: number) => boardDelete_api(idx),
     onSuccess: res => {
       alert(res.message);
       boardAll.refetch();
@@ -67,8 +67,6 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
     }
   };
 
-  console.log("boardAll", boardAll);
-
   return (
     <>
       <div className="d-flex justify-content-between">
@@ -84,12 +82,18 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
             <col width="40%" />
             <col width="5%" />
             <col width="5%" />
+            <col width="5%" />
+            <col width="5%" />
+            <col width="5%" />
           </colgroup>
           <thead>
             <tr>
               <th>No.</th>
               <th>제목</th>
               <th>내용</th>
+              <th>등록일</th>
+              <th>최신 수정일</th>
+              <th>삭제일</th>
               <th>수정</th>
               <th>삭제</th>
             </tr>
@@ -102,14 +106,20 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
             <col width="40%" />
             <col width="5%" />
             <col width="5%" />
+            <col width="5%" />
+            <col width="5%" />
+            <col width="5%" />
           </colgroup>
           <tbody>
             {boardAll.data && boardAll.data.result.length !== 0 ? (
-              boardAll.data.result.map((el: tableData, index: number) => (
+              boardAll.data.result.map((el: tableData) => (
                 <tr onClick={() => btn_rowClick(el)}>
-                  <td>{index + 1}</td>
+                  <td>{el.idx}</td>
                   <td>{el.title}</td>
                   <td>{el.content}</td>
+                  <td>{moment(el.createdAt).format("YY-MM-DD HH:mm:ss")}</td>
+                  <td>{moment(el.updatedAt).format("YY-MM-DD HH:mm:ss")}</td>
+                  <td>{el.deletedAt ? moment(el.deletedAt).format("YY-MM-DD HH:mm:ss") : "-"}</td>
                   <td
                     onClick={e => {
                       e.stopPropagation();
@@ -128,12 +138,14 @@ export const BoardList: React.FC<Props> = ({ setIsResister }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={5}>검색결과가 없습니다.</td>
+                <td colSpan={8}>검색결과가 없습니다.</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      <Pagination pagination={pagination} setPagination={setPagination} />
 
       {detailData.data && (
         <div className="mt-2">

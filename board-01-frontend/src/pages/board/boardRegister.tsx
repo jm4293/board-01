@@ -4,6 +4,7 @@ import axios from "axios";
 import * as React from "react";
 import { useBoardModify } from "../../zustand/board/boardModify.ts";
 import { useEffect } from "react";
+import { boardModify_api, boardRegister_api } from "../../api/board_api/board_api.ts";
 
 interface Props {
   setIsResister: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,16 +18,11 @@ interface FormInputs {
 export const BoardRegister: React.FC<Props> = ({ setIsResister }) => {
   const { modifyData, setModifyData } = useBoardModify();
 
-  console.log("modifyDataddddddd", modifyData);
-
   const queryClient = useQueryClient();
 
   const boardRegister = useMutation({
     mutationKey: ["boardRegister"],
-    mutationFn: (data: FormInputs) =>
-      axios.post(`http://localhost:8080/board/register`, data).then(res => {
-        return res.data;
-      }),
+    mutationFn: (data: FormInputs) => boardRegister_api(data),
     onSuccess: res => {
       alert(res.message);
       queryClient.invalidateQueries({ queryKey: ["boardAll"] });
@@ -39,10 +35,7 @@ export const BoardRegister: React.FC<Props> = ({ setIsResister }) => {
 
   const boardModify = useMutation({
     mutationKey: ["boardModify"],
-    mutationFn: (data: FormInputs) =>
-      axios.post(`http://localhost:8080/board/modify`, data).then(res => {
-        return res.data;
-      }),
+    mutationFn: (data: FormInputs & { idx: number }) => boardModify_api(data),
     onSuccess: res => {
       alert(res.message);
       queryClient.invalidateQueries({ queryKey: ["boardAll"] });
