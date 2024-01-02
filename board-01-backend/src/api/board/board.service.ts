@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 interface IResult {
   status: number;
@@ -16,7 +16,7 @@ export class BoardService {
     private readonly boardRepository: Repository<Board>,
   ) {}
 
-  async findAll(page: number = 1, limit: number = 10): Promise<{ result: Board[]; total: number }> {
+  async findAll(page: number, limit: number): Promise<{ result: Board[]; total: number }> {
     // const [result, total] = await this.boardRepository.findAndCount({
     //   skip: (page - 1) * limit,
     //   take: limit,
@@ -54,7 +54,6 @@ export class BoardService {
   }
 
   async create(body: CreateBoardDto): Promise<IResult> {
-    console.log('body', body);
     try {
       // await this.boardRepository.save(body);
 
@@ -122,20 +121,5 @@ export class BoardService {
         message: '게시물을 찾을 수 없습니다.',
       };
     }
-
-    // if (isCheck) {
-    //   const query = `DELETE FROM board WHERE idx = ${idx}`;
-    //   await this.boardRepository.query(query);
-    //
-    //   return {
-    //     status: 200,
-    //     message: 'success',
-    //   };
-    // } else {
-    //   return {
-    //     status: 400,
-    //     message: '없는 사용자입니다.',
-    //   };
-    // }
   }
 }
