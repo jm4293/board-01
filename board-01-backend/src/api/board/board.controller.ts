@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Req, Query, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Query, Put, Delete, UseGuards } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Request } from 'express';
 import { Board } from './entities/board.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 interface IResult {
   status: number;
@@ -20,6 +21,7 @@ export class BoardController {
     return this.boardService.findAll(query.page, query.limit);
   }
 
+  @UseGuards(AuthGuard('access'))
   @Get('/user')
   find(@Req() request: Request): Promise<Board> {
     return this.boardService.findOne(+request.query.idx);
