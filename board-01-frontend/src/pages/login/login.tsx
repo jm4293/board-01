@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FormInputs1, FormInputs2 } from "../../interface/login_interface/login_interface.ts";
 import { useMutation } from "@tanstack/react-query";
-import { login_api, loginCreate_api, loginJWT_api } from "../../api/login_api/login_api.ts";
+import { login_api, loginJWT_api, userCreate_api } from "../../api/login_api/login_api.ts";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -13,10 +13,11 @@ export const Login = () => {
   const login = useMutation({
     mutationKey: ["login"],
     mutationFn: (data: FormInputs1) => loginJWT_api(data),
-    onSuccess: () => {
-      // alert("로그인이 완료되었습니다.");
-      // navigate("/board");
-      // reset1();
+    onSuccess: res => {
+      alert("로그인이 완료되었습니다.");
+      sessionStorage.setItem("accessToken", res.result.jwt);
+      navigate("/board");
+      reset1();
     },
     onError: (err: any) => {
       alert(err.response.data.message);
@@ -24,8 +25,8 @@ export const Login = () => {
   });
 
   const create = useMutation({
-    mutationKey: ["loginCreate"],
-    mutationFn: (data: FormInputs2) => loginCreate_api(data),
+    mutationKey: ["userCreate"],
+    mutationFn: (data: FormInputs2) => userCreate_api(data),
     onSuccess: () => {
       alert("회원가입이 완료되었습니다.");
       setIsRegister(false);

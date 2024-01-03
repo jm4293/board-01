@@ -1,6 +1,7 @@
 import axios from "axios";
 import { pagination_type } from "../../interface/board_interface/board_interface.ts";
 import { SetStateAction } from "react";
+import { tokenAxios } from "../../util/axios/axios.ts";
 
 // 게시판 데이터가져오기(페이지네이션)
 export const boardAll_api = async (
@@ -31,7 +32,7 @@ export const boardAll_api = async (
 // 게시판 상제데이터 가져오기
 export const boardDetail_api = async (idx: number) => {
   try {
-    return await axios
+    return await tokenAxios
       .get(`http://localhost:8080/board/user`, { params: { idx: idx } })
       .then(res => {
         return res.data;
