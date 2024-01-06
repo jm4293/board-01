@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
@@ -121,5 +121,14 @@ export class BoardService {
         message: '게시물을 찾을 수 없습니다.',
       };
     }
+  }
+
+  fileUpload(file1: Express.Multer.File, file2: Express.Multer.File) {
+    if (!file1 || !file2) {
+      throw new BadRequestException('파일이 존재하지 않습니다.');
+    }
+
+    // 파일 처리 로직
+    return { file1Path: file1.path, file2Path: file2.path };
   }
 }

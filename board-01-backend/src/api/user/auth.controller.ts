@@ -61,11 +61,12 @@ export class AuthController {
     });
   }
 
-  // @UseGuards(AuthGuard('refresh'))
+  @UseGuards(AuthGuard('refresh'))
   @Post('refresh')
-  restoreAccessToken(@Req() req: Request, @Res() res: Response) {
+  // restoreAccessToken(@Req() req: Request & { user: Pick<User, 'email'> }, @Res() res: Response) {
+  restoreAccessToken(@Req() req: Request & { user: Pick<User, 'email'> }, @Res() res: Response) {
     console.log('req', req);
-    console.log('res', res);
+    // console.log('res', res);
     return this.authService.getAccessToken({ user: res.locals.user });
   }
 }
